@@ -1,0 +1,1 @@
+var sections = window.sections = {};

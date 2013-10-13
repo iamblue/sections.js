@@ -40,7 +40,8 @@ module.exports = function(grunt) {
     uglify: {
       options: {
         banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
-          '<%= grunt.template.today("yyyy-mm-dd") %> */\n\n'
+          '<%= grunt.template.today("yyyy-mm-dd") %> | ' +
+          'Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */\n\n'
       },
       dist: {
         options: {

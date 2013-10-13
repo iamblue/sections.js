@@ -1,6 +1,8 @@
 sections.js
 ===========
 
+把滾輪滾動轉換成一些處理視差滾動所需要的事件，每個段落都有 scrollIn, scrollOut, progress 事件，全局的有 progress, changed 事件
+
 ## Quick start
 
     var page = sections.create({
@@ -10,7 +12,7 @@ sections.js
     window.onload = function () {
       page.start();
 
-      page.on('changed', function () {
+      page.on('changed', function (current, previous) {
         // ...
       });
     };

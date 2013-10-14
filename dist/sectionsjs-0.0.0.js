@@ -1,4 +1,4 @@
-/*! sectionsjs - v0.0.0 - 2013-10-13 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
+/*! sectionsjs - v0.0.0 - 2013-10-14 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
 
 (function(window, document) {
     "use strict";
@@ -134,12 +134,14 @@
     }();
     sections.proto = new sections.events.EventEmitter();
     sections.proto.start = function() {
+        this.__started = true;
         this.getSections();
         this.updateWindowSize();
         this.addScrollEventHandler();
         this.getScrollHeight();
         this.addWindowResizeHandler();
         this.updateProgress();
+        this.lazyApply();
         return this;
     };
     sections.proto.getScrollHeight = function() {
@@ -237,6 +239,14 @@
         });
         return this;
     };
+    sections.proto.lazyApply = function() {
+        var allfn = this.__lazyApply;
+        var len = allfn.length;
+        while (len--) {
+            allfn[len]();
+        }
+        return this;
+    };
     sections.proto.current = function() {
         return this.get(this.currentIndex());
     };
@@ -253,22 +263,29 @@
         return this.sections[index] || null;
     };
     sections.proto.section = function(index, fn) {
-        if (typeof fn === "function") {
-            switch (index) {
-              case "first":
-                index = 0;
-                break;
+        if (!this.__started) {
+            var that = this;
+            this.__lazyApply.push(function() {
+                that.section(index, fn);
+            });
+        } else {
+            if (typeof fn === "function") {
+                switch (index) {
+                  case "first":
+                    index = 0;
+                    break;
 
-              case "last":
-                index = this.sections.length - 1;
-                break;
+                  case "last":
+                    index = this.sections.length - 1;
+                    break;
 
-              default:
-                index = index | 0;
-            }
-            var section = this.get(index);
-            if (section) {
-                fn.call(section, section);
+                  default:
+                    index = index | 0;
+                }
+                var section = this.get(index);
+                if (section) {
+                    fn.call(section, section);
+                }
             }
         }
         return this;
@@ -294,12 +311,14 @@
                 config[i] = defConfig[i];
             }
         }
+        this.__started = false;
         this.__currentIndex = 0;
         this.config = config;
         this.width = 0;
         this.height = 0;
         this.top = 0;
         this.left = 0;
+        this.__lazyApply = [];
     };
     sections.Sections.prototype = sections.proto;
     sections.create = function(config) {

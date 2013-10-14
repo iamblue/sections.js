@@ -8,12 +8,14 @@ sections.Sections = function (config) {
       config[i] = defConfig[i];
     }
   }
+  this.__started = false;
   this.__currentIndex = 0;
   this.config = config;
   this.width = 0;
   this.height = 0;
   this.top = 0;
   this.left = 0;
+  this.__lazyApply = [];
 };
 
 sections.Sections.prototype = sections.proto;

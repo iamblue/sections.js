@@ -9,12 +9,22 @@ sections.js
       // config  
     });
 
-    window.onload = function () {
-      page.start();
+    page.on('changed', function (current, previous) {
+      // ...
+    });
 
-      page.on('changed', function (current, previous) {
+    page.section(0, function (section) {
+      section.on('scrollIn', function () {
         // ...
       });
+
+      section.on('progress', function () {
+        // ...
+      });
+    });
+
+    window.onload = function () {
+      page.start();
     };
 
 ## Sections API

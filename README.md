@@ -62,10 +62,6 @@ All section are instance of EventEmitter.
 * `scrollOut`
     * way (-1: bottom to top, 1: top to bottom)
 
-## Todo
-
-* Let events be lazy
-
 ## License
 
 (The MIT License)

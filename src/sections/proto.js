@@ -82,13 +82,15 @@ sections.proto.checkCurrentSection = function () {
   var that = this;
   var prevIndex = this.__currentIndex | 0;
   this.each(function (index, section) {
-    if (that.top > section.top && that.top <= section.top + section.getHeight() && index !== prevIndex) {
+    if (that.top >= section.top && that.top < section.top + section.getHeight() && index !== prevIndex) {
       that.__currentIndex = index;
       var prev = that.get(prevIndex);
       var current = that.get(index);
       that.emit('changed', current, prev);
-      prev.emit('scrollOut', prev < current ? 1 : -1);
-      current.emit('scrollIn', prev > current ? 1 : -1);
+      if (prev) {
+        prev.emit("scrollOut", prevIndex < index ? 1 : -1);
+      }
+      current.emit("scrollIn", prevIndex > index ? 1 : -1);
       return false;
     }
   });

@@ -32,10 +32,8 @@ sections.Section = (function () {
     var progress;
     if (pageTop + pageHeight > this.top && pageTop <= this.top + height) {
       var pos = this.top - pageTop;
-      progress = (pos / height) * 100;
-
+      progress = pos / (pos > 0 ? pageHeight : height) * 100;
       progress = progress > 0 ? 100 - progress : progress;
-
     } else {
       progress = this.top - pageTop > 0 ? 0 : -100;
     }

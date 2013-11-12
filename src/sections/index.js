@@ -9,7 +9,7 @@ sections.Sections = function (config) {
     }
   }
   this.__started = false;
-  this.__currentIndex = 0;
+  this.__currentIndex = -1;
   this.config = config;
   this.width = 0;
   this.height = 0;

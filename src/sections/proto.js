@@ -4,12 +4,16 @@ sections.proto.start = function () {
   this.__started = true;
   this.getSections();
   this.updateWindowSize();
-  this.addScrollEventHandler();
+  this.__intervalID = this.setInterval();
   this.getScrollHeight();
   this.addWindowResizeHandler();
   this.updateProgress();
   this.lazyApply();
   return this;
+};
+
+sections.proto.stop = function () {
+  this.cancelAnimationFrame(this.__intervalID);
 };
 
 sections.proto.getScrollHeight = function () {
@@ -30,7 +34,7 @@ sections.proto.getSections = function () {
   return this;
 };
 
-sections.proto.addScrollEventHandler = function () {
+sections.proto.setInterval = function () {
   var that = this;
   setInterval(function () {
     var scrollOffset = {x: 0, y: 0};
@@ -50,6 +54,22 @@ sections.proto.addScrollEventHandler = function () {
     that.updateProgress();
   }, this.config.interval);
   return this;
+};
+
+sections.proto.requestAnimationFrame = function (cb, interval) {
+  return (window.requestAnimationFrame
+    || window.mozRequestAnimationFrame
+    || window.webkitRequestAnimationFrame
+    || window.msRequestAnimationFrame
+    || setInterval)(cb);
+};
+
+sections.proto.cancelAnimationFrame = function (id) {
+  (window.cancelAnimationFrame
+    || window.mozcancelAnimationFrame
+    || window.webkitcancelAnimationFrame
+    || window.mscancelAnimationFrame
+    || setInterval)(id);
 };
 
 sections.proto.updateWindowSize = function () {

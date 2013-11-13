@@ -36,7 +36,7 @@ sections.proto.getSections = function () {
 
 sections.proto.setInterval = function () {
   var that = this;
-  setInterval(function () {
+  var step = function () {
     var scrollOffset = {x: 0, y: 0};
     if (window.pageYOffset) {
       scrollOffset.y = window.pageYOffset;
@@ -52,7 +52,9 @@ sections.proto.setInterval = function () {
     that.left = scrollOffset.x;
     that.checkCurrentSection();
     that.updateProgress();
-  }, this.config.interval);
+    that.requestAnimationFrame(step, that.config.interval);
+  };
+  step();
   return this;
 };
 
@@ -100,7 +102,7 @@ sections.proto.addWindowResizeHandler = function () {
 
 sections.proto.checkCurrentSection = function () {
   var that = this;
-  var prevIndex = this.__currentIndex | 0;
+  var prevIndex = this.__currentIndex;
   this.each(function (index, section) {
     if (that.top >= section.top && that.top < section.top + section.getHeight() && index !== prevIndex) {
       that.__currentIndex = index;

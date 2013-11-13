@@ -4,19 +4,33 @@ sections.Section = (function () {
     this.element = element;
     this.updatePosition();
     this.progress = 0;
+    this.__transitions = [];
+    this.__transitionTargets = [];
   };
 
   Section.prototype = new sections.events.EventEmitter();
 
   Section.prototype.updatePosition = function () {
-    var rect = this.element.getBoundingClientRect();
-    this.left = rect.left;
-    this.right = rect.right;
-    this.top = rect.top;
-    this.bottom = rect.bottom;
+    var offset = this.getOffset();
+    this.top = offset.top;
     return this;
   };
-  
+
+  Section.prototype.getOffset = function () {
+    var el = this.element;
+    var x = 0;
+    var y = 0;
+    while( el && !isNaN( el.offsetLeft ) && !isNaN( el.offsetTop ) ) {
+      x += el.offsetLeft;
+      y += el.offsetTop;
+      el = el.offsetParent;
+    }
+    return {
+      top: y,
+      left: x
+    };
+  };
+
   Section.prototype.getCSS = function (key) {
     var css = sections.utils.getInlineCSS(this.element);
     return key ? css[key] : css;
@@ -38,6 +52,7 @@ sections.Section = (function () {
       progress = this.top - pageTop > 0 ? 0 : -100;
     }
     if (this.progress !== progress) {
+      this.runTransition(progress);
       this.progress = progress;
       this.emit('progress', progress);
     }
@@ -45,7 +60,53 @@ sections.Section = (function () {
   };
 
   Section.prototype.getHeight = function () {
-    return this.element.offsetHeight;
+    var el = this.element;
+    return el.offsetHeight
+      || el.clientHeight
+      || el.scrollHeight;
+  };
+
+  Section.prototype.transitions = function (transitions) {
+    transitions || (transitions = []);
+    var i, len = transitions.length;
+    var transition;
+    var newTransitions = this.__transitions;
+    for (i = 0; i < len; i += 1) {
+      transition = transitions[i];
+      transition.target = this.setTarget(transition.target);
+      newTransitions.push(new sections.Transition(transition));
+    }
+    return this;
+  };
+
+  Section.prototype.setTarget = function (target) {
+    var targets = this.__transitionTargets;
+    var id = targets.indexOf(target);
+    if (!~id) {
+      targets.push(target);
+      id = targets.length - 1;
+    }
+    return id;
+  };
+
+  Section.prototype.runTransition = function (progress) {
+    var transitions = this.__transitions;
+    var targets = this.__transitionTargets;
+    var i, len = transitions.length;
+    var targetValues = [];
+    var values;
+    var target;
+    var transition;
+    for (i = 0; i < len; i += 1) {
+      transition = transitions[i];
+      target = transition.getTarget();
+      values = targetValues[target] || sections.utils.getInlineCSS(targets[target]);
+      values[transition.getKey()] = transition.update(progress);
+      targetValues[target] = values;
+    }
+    for (i = 0, len = targetValues.length; i < len; i += 1) {
+      sections.utils.setInlineCSS(targets[i], targetValues[i]);
+    }
   };
 
   return Section;

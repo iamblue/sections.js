@@ -26,8 +26,10 @@ page.section(1, function (section) {
   });
 });
 
+page.on('stopped', function () {
+  //console.log('stopped');
+});
+
 window.onload = function () {
-  setTimeout(function () {
-    page.start();
-  }, 200);
+  page.init();
 };

@@ -1,19 +1,17 @@
 sections.proto = new sections.events.EventEmitter();
 
-sections.proto.start = function () {
-  this.__started = true;
+sections.proto.init = function () {
+  this.__started = false;
+  this.__init = true;
   this.getSections();
   this.updateWindowSize();
-  this.__intervalID = this.setInterval();
   this.getScrollHeight();
   this.addWindowResizeHandler();
+  this.addScrollHandler();
+  this.addStopHandler();
   this.updateProgress();
   this.lazyApply();
   return this;
-};
-
-sections.proto.stop = function () {
-  this.cancelAnimationFrame(this.__intervalID);
 };
 
 sections.proto.getScrollHeight = function () {
@@ -34,28 +32,42 @@ sections.proto.getSections = function () {
   return this;
 };
 
-sections.proto.setInterval = function () {
-  var that = this;
-  var step = function () {
-    var scrollOffset = {x: 0, y: 0};
-    if (window.pageYOffset) {
-      scrollOffset.y = window.pageYOffset;
-      scrollOffset.x = window.pageXOffset;
-    } else if (document.body && document.body.scrollLeft) {
-      scrollOffset.y = document.body.scrollTop;
-      scrollOffset.x = document.body.scrollLeft;
-    } else if (document.documentElement && document.documentElement.scrollLeft) {
-      scrollOffset.y = document.documentElement.scrollTop;
-      scrollOffset.x = document.documentElement.scrollLeft;
-    }
-    that.top = scrollOffset.y;
-    that.left = scrollOffset.x;
-    that.checkCurrentSection();
-    that.updateProgress();
-    that.requestAnimationFrame(step, that.config.interval);
-  };
-  step();
+sections.proto.start = function () {
+  if (!this.__started) {
+    this.__started = true;
+    this.emit('started');
+    this.loop();
+  }
   return this;
+};
+
+sections.proto.stop = function () {
+  this.cancelAnimationFrame(this.__intervalID);
+  this.__started = false;
+};
+
+sections.proto.loop = function () {
+  var step = (function () {
+    if (this.__started) {
+      var scrollOffset = {x: 0, y: 0};
+      if (window.pageYOffset) {
+        scrollOffset.y = window.pageYOffset;
+        scrollOffset.x = window.pageXOffset;
+      } else if (document.body && document.body.scrollLeft) {
+        scrollOffset.y = document.body.scrollTop;
+        scrollOffset.x = document.body.scrollLeft;
+      } else if (document.documentElement && document.documentElement.scrollLeft) {
+        scrollOffset.y = document.documentElement.scrollTop;
+        scrollOffset.x = document.documentElement.scrollLeft;
+      }
+      this.top = scrollOffset.y;
+      this.left = scrollOffset.x;
+      this.checkCurrentSection();
+      this.updateProgress();
+      this.__intervalID = this.requestAnimationFrame(step, this.config.interval);
+    }
+  }).bind(this);
+  step();
 };
 
 sections.proto.requestAnimationFrame = function (cb, interval) {
@@ -91,45 +103,57 @@ sections.proto.updateWindowSize = function () {
 };
 
 sections.proto.addWindowResizeHandler = function () {
-  var that = this;
-  var onResize = function () {
-    that.updateWindowSize();
-  };
+  var onResize = (function () {
+    this.updateWindowSize();
+  }).bind(this);
   window.addEventListener('resize', onResize);
   onResize();
   return this;
 };
 
+sections.proto.addScrollHandler = function () {
+  window.addEventListener('scroll', (function () {
+    this.start();
+  }).bind(this));
+};
+
+sections.proto.addStopHandler = function () {
+  this.on('stop', (function () {
+    this.stop();
+    this.emit('stopped');
+  }).bind(this));
+};
+
 sections.proto.checkCurrentSection = function () {
-  var that = this;
   var prevIndex = this.__currentIndex;
-  this.each(function (index, section) {
-    if (that.top >= section.top && that.top < section.top + section.getHeight() && index !== prevIndex) {
-      that.__currentIndex = index;
-      var prev = that.get(prevIndex);
-      var current = that.get(index);
-      that.emit('changed', current, prev);
+  this.each((function (index, section) {
+    if (this.top >= section.top && this.top < section.top + section.getHeight() && index !== prevIndex) {
+      this.__currentIndex = index;
+      var prev = this.get(prevIndex);
+      var current = this.get(index);
+      this.emit('changed', current, prev);
       if (prev) {
         prev.emit("scrollOut", prevIndex < index ? 1 : -1);
       }
       current.emit("scrollIn", prevIndex > index ? 1 : -1);
       return false;
     }
-  });
+  }).bind(this));
   return this;
 };
 
 sections.proto.updateProgress = function () {
   var last = this.last();
-  var that = this;
   var progress = (this.top / (this.scrollHeight - last.getHeight())) * 100;
-  if (this.progress !== progress) {
+  if (this.progress === progress) {
+    this.emit('stop');
+  } else {
     this.progress = progress;
     this.emit('progress', progress);
   }
-  this.each(function (index, section) {
-    section.updateProgress(that.top, that.height);
-  });
+  this.each((function (index, section) {
+    section.updateProgress(this.top, this.height);
+  }).bind(this));
   return this;
 };
 
@@ -163,11 +187,10 @@ sections.proto.get = function (index) {
 };
 
 sections.proto.section = function (index, fn) {
-  if (!this.__started) {
-    var that = this;
-    this.__lazyApply.push(function () {
-      that.section(index, fn);
-    });
+  if (!this.__init) {
+    this.__lazyApply.push((function () {
+      this.section(index, fn);
+    }).bind(this));
   } else {
     if (typeof fn === 'function') {
       switch (index) {

@@ -5,7 +5,7 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     srcDir: './src',
-    baseFileName: 'dist/<%= pkg.name %>-<%= pkg.version %>',
+    baseFileName: 'dist/<%= pkg.name %>',
     watch: {
       src: {
         files: '<%= srcDir %>/**/*.js',

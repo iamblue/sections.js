@@ -75,7 +75,7 @@ sections.proto.requestAnimationFrame = function (cb, interval) {
     || window.mozRequestAnimationFrame
     || window.webkitRequestAnimationFrame
     || window.msRequestAnimationFrame
-    || setInterval)(cb);
+    || setTimeout)(cb);
 };
 
 sections.proto.cancelAnimationFrame = function (id) {

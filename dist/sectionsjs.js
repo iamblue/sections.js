@@ -1,4 +1,4 @@
-/*! sectionsjs - v0.0.3 - 2013-11-13 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
+/*! sectionsjs - v0.0.4 - 2013-11-13 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
 
 (function(window, document) {
     "use strict";
@@ -333,7 +333,7 @@
         step();
     };
     sections.proto.requestAnimationFrame = function(cb, interval) {
-        return (window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || setInterval)(cb);
+        return (window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || setTimeout)(cb);
     };
     sections.proto.cancelAnimationFrame = function(id) {
         (window.cancelAnimationFrame || window.mozcancelAnimationFrame || window.webkitcancelAnimationFrame || window.mscancelAnimationFrame || setInterval)(id);

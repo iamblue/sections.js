@@ -111,7 +111,7 @@
                 break;
 
               case sectionProgress >= this.__options.end:
-                progress = 0;
+                progress = 100;
                 break;
 
               default:

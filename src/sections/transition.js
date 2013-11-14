@@ -23,7 +23,7 @@ sections.Transition = (function () {
       progress = 0;
       break;
     case sectionProgress >= this.__options.end:
-      progress = 0;
+      progress = 100;
       break;
     default:
       var range = this.__options.end - this.__options.start;

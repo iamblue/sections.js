@@ -77,6 +77,7 @@ Get a section and wrap it into the function.
 * `end`: bj4
 * `from`: bj4
 * `to`: bj4
+* `format`: bj4
 * `target`: html element
 
 ## Section API

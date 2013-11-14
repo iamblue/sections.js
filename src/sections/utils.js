@@ -27,3 +27,16 @@ sections.utils.setInlineCSS = function (element, style) {
   element.setAttribute('style', newStyle.join('; '));
   return oldStyle;
 };
+
+sections.utils.forEach = function (array, callback) {
+  array || (array = []);
+  callback || (callback = function () {});
+  var i, val;
+  var len = array.length;
+  for (i = 0; i < len; i += 1) {
+    val = array[i];
+    if (callback(val, i) === false) {
+      break;
+    }
+  }
+};

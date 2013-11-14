@@ -36,6 +36,18 @@
         element.setAttribute("style", newStyle.join("; "));
         return oldStyle;
     };
+    sections.utils.forEach = function(array, callback) {
+        array || (array = []);
+        callback || (callback = function() {});
+        var i, val;
+        var len = array.length;
+        for (i = 0; i < len; i += 1) {
+            val = array[i];
+            if (callback(val, i) === false) {
+                break;
+            }
+        }
+    };
     sections.events = {};
     sections.events.EventEmitter = function() {
         var EventEmitter = function() {
@@ -247,15 +259,11 @@
             return el.offsetHeight || el.clientHeight || el.scrollHeight;
         };
         Section.prototype.transitions = function(transitions) {
-            transitions || (transitions = []);
-            var i, len = transitions.length;
-            var transition;
             var newTransitions = this.__transitions;
-            for (i = 0; i < len; i += 1) {
-                transition = transitions[i];
+            sections.utils.forEach(transitions, function(transition, i) {
                 transition.target = this.setTarget(transition.target);
                 newTransitions.push(new sections.Transition(transition));
-            }
+            }.bind(this));
             return this;
         };
         Section.prototype.setTarget = function(target) {
@@ -270,27 +278,21 @@
         Section.prototype.runTransition = function(progress) {
             var transitions = this.__transitions;
             var targets = this.__transitionTargets;
-            var i, len = transitions.length;
             var targetValues = [];
-            var values;
-            var target;
-            var transition;
-            for (i = 0; i < len; i += 1) {
-                transition = transitions[i];
-                target = transition.getTarget();
-                values = targetValues[target] || sections.utils.getInlineCSS(targets[target]);
-                var keys = transition.getKeys();
-                var klen = keys.length;
+            var forEach = sections.utils.forEach;
+            forEach(transitions, function(transition, i) {
+                var target = transition.getTarget();
+                var values = targetValues[target] || sections.utils.getInlineCSS(targets[target]);
                 var value = transition.update(progress);
-                var j;
-                for (j = 0; j < klen; j += 1) {
-                    values[keys[j]] = value;
-                }
+                var keys = transition.getKeys();
+                forEach(keys, function(key) {
+                    values[key] = value;
+                });
                 targetValues[target] = values;
-            }
-            for (i = 0, len = targetValues.length; i < len; i += 1) {
-                sections.utils.setInlineCSS(targets[i], targetValues[i]);
-            }
+            });
+            forEach(targetValues, function(values, i) {
+                sections.utils.setInlineCSS(targets[i], values);
+            });
         };
         return Section;
     }();
@@ -316,12 +318,10 @@
     };
     sections.proto.getSections = function() {
         this.sections = [];
-        var elements = document.getElementsByClassName(this.config.className) || [];
-        var len = elements.length;
-        var index;
-        for (index = 0; index < len; index += 1) {
-            this.sections.push(new sections.Section(elements[index]));
-        }
+        var elements = document.getElementsByClassName(this.config.className);
+        sections.utils.forEach(elements, function(element) {
+            this.sections.push(new sections.Section(element));
+        }.bind(this));
         return this;
     };
     sections.proto.start = function() {
@@ -486,14 +486,11 @@
         return this;
     };
     sections.proto.each = function(fn) {
-        var items = this.sections || [];
-        var len = items.length;
-        var index;
-        for (index = 0; index < len; index += 1) {
-            if (fn.call(items[index], index, items[index]) === false) {
-                break;
+        sections.utils.forEach(this.sections, function(val, i) {
+            if (fn.call(val, i, val) === false) {
+                return false;
             }
-        }
+        });
         return this;
     };
     sections.Sections = function(config) {

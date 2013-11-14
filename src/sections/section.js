@@ -67,15 +67,11 @@ sections.Section = (function () {
   };
 
   Section.prototype.transitions = function (transitions) {
-    transitions || (transitions = []);
-    var i, len = transitions.length;
-    var transition;
     var newTransitions = this.__transitions;
-    for (i = 0; i < len; i += 1) {
-      transition = transitions[i];
+    sections.utils.forEach(transitions, (function (transition, i) {
       transition.target = this.setTarget(transition.target);
       newTransitions.push(new sections.Transition(transition));
-    }
+    }).bind(this));
     return this;
   };
 
@@ -92,27 +88,21 @@ sections.Section = (function () {
   Section.prototype.runTransition = function (progress) {
     var transitions = this.__transitions;
     var targets = this.__transitionTargets;
-    var i, len = transitions.length;
     var targetValues = [];
-    var values;
-    var target;
-    var transition;
-    for (i = 0; i < len; i += 1) {
-      transition = transitions[i];
-      target = transition.getTarget();
-      values = targetValues[target] || sections.utils.getInlineCSS(targets[target]);
-      var keys = transition.getKeys();
-      var klen = keys.length;
+    var forEach = sections.utils.forEach;
+    forEach(transitions, function (transition, i) {
+      var target = transition.getTarget();
+      var values = targetValues[target] || sections.utils.getInlineCSS(targets[target]);
       var value = transition.update(progress);
-      var j;
-      for (j = 0; j < klen; j += 1) {
-        values[keys[j]] = value;
-      }
+      var keys = transition.getKeys();
+      forEach(keys, function (key) {
+        values[key] = value;
+      });
       targetValues[target] = values;
-    }
-    for (i = 0, len = targetValues.length; i < len; i += 1) {
-      sections.utils.setInlineCSS(targets[i], targetValues[i]);
-    }
+    });
+    forEach(targetValues, function (values, i) {
+      sections.utils.setInlineCSS(targets[i], values);
+    });
   };
 
   return Section;

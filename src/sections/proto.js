@@ -23,12 +23,10 @@ sections.proto.getScrollHeight = function () {
 
 sections.proto.getSections = function () {
   this.sections = [];
-  var elements = document.getElementsByClassName(this.config.className) || [];
-  var len = elements.length;
-  var index;
-  for (index = 0; index < len; index += 1) {
-    this.sections.push(new sections.Section(elements[index]));
-  }
+  var elements = document.getElementsByClassName(this.config.className);
+  sections.utils.forEach(elements, (function (element) {
+    this.sections.push(new sections.Section(element));
+  }).bind(this));
   return this;
 };
 
@@ -213,13 +211,10 @@ sections.proto.section = function (index, fn) {
 };
 
 sections.proto.each = function (fn) {
-  var items = this.sections || [];
-  var len = items.length;
-  var index;
-  for (index = 0; index < len; index += 1) {
-    if (fn.call(items[index], index, items[index]) === false) {
-      break;
+  sections.utils.forEach(this.sections, function (val, i) {
+    if (fn.call(val, i, val) === false) {
+      return false;
     };
-  }
+  });
   return this;
 };

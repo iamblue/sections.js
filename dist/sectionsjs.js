@@ -1,4 +1,4 @@
-/*! sectionsjs - v0.0.4 - 2013-11-14 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
+/*! sectionsjs - v0.0.5 - 2013-11-14 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
 
 (function(window, document) {
     "use strict";
@@ -127,7 +127,7 @@
         Transition.prototype.calcValue = function(value, progress) {
             var from = value.from;
             var to = value.to;
-            return (to - from) / 100 * progress;
+            return (to - from) / 100 * progress + from;
         };
         Transition.prototype.getKey = function() {
             return this.__options.key;

@@ -42,7 +42,7 @@ sections.Transition = (function () {
   Transition.prototype.calcValue = function (value, progress) {
     var from = value.from;
     var to = value.to;
-    return (to - from) / 100 * progress;
+    return (to - from) / 100 * progress + from;
   };
 
   Transition.prototype.getKey = function () {

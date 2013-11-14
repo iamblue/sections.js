@@ -18,7 +18,8 @@ page.section(1, function (section) {
       from: 0,
       to: 1,
       format: '%s',
-      target: target
+      target: target,
+      prefix: true
     }
   ]);
   section.on('progress', function (progress) {

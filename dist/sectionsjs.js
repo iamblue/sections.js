@@ -142,8 +142,17 @@
             var to = value.to;
             return (to - from) / 100 * progress + from;
         };
-        Transition.prototype.getKey = function() {
-            return this.__options.key;
+        Transition.prototype.getKeys = function() {
+            var key = this.__options.key;
+            var prefix = Transition.cssPrefix;
+            var keys = [ key ];
+            if (this.__options.prefix) {
+                var i, len = prefix.length;
+                for (i = 0; i < len; i += 1) {
+                    keys.push("-" + prefix[i] + "-" + key);
+                }
+            }
+            return keys;
         };
         Transition.prototype.getTarget = function() {
             return this.__options.target;
@@ -167,8 +176,10 @@
             values: null,
             format: "%s",
             handler: null,
-            target: null
+            target: null,
+            prefix: false
         };
+        Transition.cssPrefix = [ "webkit", "moz", "ms", "o" ];
         Transition.format = function(format, values) {
             var index = 0;
             return format.replace(/\\%s/g, "￿").replace(/%s/g, function() {
@@ -268,7 +279,13 @@
                 transition = transitions[i];
                 target = transition.getTarget();
                 values = targetValues[target] || sections.utils.getInlineCSS(targets[target]);
-                values[transition.getKey()] = transition.update(progress);
+                var keys = transition.getKeys();
+                var klen = keys.length;
+                var value = transition.update(progress);
+                var j;
+                for (j = 0; j < klen; j += 1) {
+                    values[keys[j]] = value;
+                }
                 targetValues[target] = values;
             }
             for (i = 0, len = targetValues.length; i < len; i += 1) {

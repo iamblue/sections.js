@@ -56,8 +56,17 @@ sections.Transition = (function () {
     return (to - from) / 100 * progress + from;
   };
 
-  Transition.prototype.getKey = function () {
-    return this.__options.key;
+  Transition.prototype.getKeys = function () {
+    var key = this.__options.key;
+    var prefix = Transition.cssPrefix;
+    var keys = [key];
+    if (this.__options.prefix) {
+      var i, len = prefix.length;
+      for (i = 0; i < len; i += 1) {
+        keys.push('-' + prefix[i] + '-' + key);
+      }
+    }
+    return keys;
   };
 
   Transition.prototype.getTarget = function () {
@@ -85,8 +94,11 @@ sections.Transition = (function () {
     values: null,  // css transition, scale(%s) rotate(%sdeg)
     format: '%s',
     handler: null,
-    target: null
+    target: null,
+    prefix: false
   };
+
+  Transition.cssPrefix = ['webkit', 'moz', 'ms', 'o'];
 
   Transition.format = function (format, values) {
     var index = 0;

@@ -101,7 +101,13 @@ sections.Section = (function () {
       transition = transitions[i];
       target = transition.getTarget();
       values = targetValues[target] || sections.utils.getInlineCSS(targets[target]);
-      values[transition.getKey()] = transition.update(progress);
+      var keys = transition.getKeys();
+      var klen = keys.length;
+      var value = transition.update(progress);
+      var j;
+      for (j = 0; j < klen; j += 1) {
+        values[keys[j]] = value;
+      }
       targetValues[target] = values;
     }
     for (i = 0, len = targetValues.length; i < len; i += 1) {

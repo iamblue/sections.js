@@ -104,9 +104,22 @@
             return Transition.format(this.__options.format, values);
         };
         Transition.prototype.getProgress = function(sectionProgress) {
-            var range = Math.abs(this.__options.start - this.__options.end);
-            var current = Math.abs(sectionProgress - this.__options.end);
-            return current / range * 100;
+            var progress;
+            switch (true) {
+              case sectionProgress <= this.__options.start:
+                progress = 0;
+                break;
+
+              case sectionProgress >= this.__options.end:
+                progress = 0;
+                break;
+
+              default:
+                var range = this.__options.end - this.__options.start;
+                var current = sectionProgress - this.__options.start;
+                progress = current / range * 100;
+            }
+            return progress;
         };
         Transition.prototype.getValue = function(progress) {
             var cssValue;
@@ -207,9 +220,9 @@
             if (pageTop + pageHeight > this.top && pageTop <= this.top + height) {
                 var pos = this.top - pageTop;
                 progress = pos / (pos > 0 ? pageHeight : height) * 100;
-                progress = progress > 0 ? 100 - progress : progress;
+                progress = progress > 0 ? 100 - progress : progress * -1 + 100;
             } else {
-                progress = this.top - pageTop > 0 ? 0 : -100;
+                progress = this.top - pageTop > 0 ? 0 : 200;
             }
             if (this.progress !== progress) {
                 this.runTransition(progress);

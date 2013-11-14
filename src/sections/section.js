@@ -47,9 +47,9 @@ sections.Section = (function () {
     if (pageTop + pageHeight > this.top && pageTop <= this.top + height) {
       var pos = this.top - pageTop;
       progress = pos / (pos > 0 ? pageHeight : height) * 100;
-      progress = progress > 0 ? 100 - progress : progress;
+      progress = progress > 0 ? 100 - progress : progress * -1 + 100;
     } else {
-      progress = this.top - pageTop > 0 ? 0 : -100;
+      progress = this.top - pageTop > 0 ? 0 : 200;
     }
     if (this.progress !== progress) {
       this.runTransition(progress);

@@ -6,7 +6,7 @@ sections.js
 ## Quick start
 
     var page = sections.create({
-      // config  
+      // config 
     });
 
     page.on('changed', function (current, previous) {
@@ -21,10 +21,21 @@ sections.js
       section.on('progress', function () {
         // ...
       });
+
+      section.transitions([
+        {
+          key: 'opacity',
+          start: 0,
+          end: 200,
+          from: 0,
+          to: 1,
+          target: document.querySelector('.orz')
+        }
+      ]);
     });
 
     window.onload = function () {
-      page.start();
+      page.init();
     };
 
 ## Sections API
@@ -39,15 +50,13 @@ All sections are instances of EventEmitter.
     * current section
     * previous section
 
-### .start(config)
+### .init(config)
 
 Use this method after entire page has loaded.
 
 #### Default config
 
 * `className`: section
-* `interval`: 200
-    progress update frequency
 * `autoSectionHeight`: true
     Set section height equal to screen size automatically
 
@@ -59,6 +68,17 @@ Get section by index.
 
 Get a section and wrap it into the function.
 
+### .transitions(options)
+
+#### options
+
+* `key`: css key
+* `start`: bj4
+* `end`: bj4
+* `from`: bj4
+* `to`: bj4
+* `target`: html element
+
 ## Section API
 
 All section are instance of EventEmitter.
@@ -66,7 +86,7 @@ All section are instance of EventEmitter.
 ### Events
 
 * `progress`
-    * percent (range: -100 ~ 100)
+    * percent (range: 0 ~ 200, enter: 0 ~ 100, leave: 100 ~ 200)
 * `scrollIn`
     * way (-1: top to bottom, 1: bottom to top)
 * `scrollOut`

@@ -17,8 +17,8 @@ sections.Transition = (function () {
   };
 
   Transition.prototype.getProgress = function (sectionProgress) {
-    var range = this.__options.start - this.__options.end;
-    var current = sectionProgress - this.__options.end;
+    var range = Math.abs(this.__options.start - this.__options.end);
+    var current = Math.abs(sectionProgress - this.__options.end);
     return current / range * 100;
   };
 

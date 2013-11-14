@@ -1,4 +1,4 @@
-/*! sectionsjs - v0.0.4 - 2013-11-13 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
+/*! sectionsjs - v0.0.4 - 2013-11-14 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
 
 (function(window, document) {
     "use strict";
@@ -104,8 +104,8 @@
             return Transition.format(this.__options.format, values);
         };
         Transition.prototype.getProgress = function(sectionProgress) {
-            var range = this.__options.start - this.__options.end;
-            var current = sectionProgress - this.__options.end;
+            var range = Math.abs(this.__options.start - this.__options.end);
+            var current = Math.abs(sectionProgress - this.__options.end);
             return current / range * 100;
         };
         Transition.prototype.getValue = function(progress) {

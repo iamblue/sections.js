@@ -1,4 +1,4 @@
-/*! sectionsjs - v0.0.5 - 2013-11-14 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
+/*! sectionsjs - v0.0.5 - 2013-11-15 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
 
 (function(window, document) {
     "use strict";
@@ -47,6 +47,20 @@
                 break;
             }
         }
+    };
+    sections.utils.getVendorPrefix = function() {
+        var getStyle = window.getComputedStyle;
+        var prefix;
+        if (getStyle) {
+            var style = getStyle(document.documentElement, "");
+            var match;
+            style = Array.prototype.join.call(style, "");
+            match = style.match(/-(?:O|Moz|webkit|ms)-/i);
+            if (match) {
+                prefix = match[0];
+            }
+        }
+        return prefix;
     };
     sections.events = {};
     sections.events.EventEmitter = function() {
@@ -154,17 +168,10 @@
             var to = value.to;
             return (to - from) / 100 * progress + from;
         };
-        Transition.prototype.getKeys = function() {
+        Transition.prototype.getKey = function(prefix) {
             var key = this.__options.key;
-            var prefix = Transition.cssPrefix;
-            var keys = [ key ];
-            if (this.__options.prefix) {
-                var i, len = prefix.length;
-                for (i = 0; i < len; i += 1) {
-                    keys.push("-" + prefix[i] + "-" + key);
-                }
-            }
-            return keys;
+            prefix && (key = prefix + key);
+            return key;
         };
         Transition.prototype.getTarget = function() {
             return this.__options.target;
@@ -191,7 +198,6 @@
             target: null,
             prefix: false
         };
-        Transition.cssPrefix = [ "webkit", "moz", "ms", "o" ];
         Transition.format = function(format, values) {
             var index = 0;
             return format.replace(/\\%s/g, "￿").replace(/%s/g, function() {
@@ -201,8 +207,9 @@
         return Transition;
     }();
     sections.Section = function() {
-        var Section = function(element) {
+        var Section = function(element, sections_) {
             sections.events.EventEmitter.call(this);
+            this.sections = sections_;
             this.element = element;
             this.updatePosition();
             this.progress = 0;
@@ -283,13 +290,9 @@
             forEach(transitions, function(transition, i) {
                 var target = transition.getTarget();
                 var values = targetValues[target] || sections.utils.getInlineCSS(targets[target]);
-                var value = transition.update(progress);
-                var keys = transition.getKeys();
-                forEach(keys, function(key) {
-                    values[key] = value;
-                });
+                values[transition.getKey(transition.prefix ? this.sections.__prefix : null)] = transition.update(progress);
                 targetValues[target] = values;
-            });
+            }.bind(this));
             forEach(targetValues, function(values, i) {
                 sections.utils.setInlineCSS(targets[i], values);
             });
@@ -300,6 +303,8 @@
     sections.proto.init = function() {
         this.__started = false;
         this.__init = true;
+        this.__prefix = null;
+        this.detectCSSPrefix();
         this.getSections();
         this.updateWindowSize();
         this.getScrollHeight();
@@ -309,6 +314,9 @@
         this.updateProgress();
         this.lazyApply();
         return this;
+    };
+    sections.proto.detectCSSPrefix = function() {
+        this.__prefix = sections.utils.getVendorPrefix();
     };
     sections.proto.getScrollHeight = function() {
         var body = document.body;
@@ -320,7 +328,7 @@
         this.sections = [];
         var elements = document.getElementsByClassName(this.config.className);
         sections.utils.forEach(elements, function(element) {
-            this.sections.push(new sections.Section(element));
+            this.sections.push(new sections.Section(element, this));
         }.bind(this));
         return this;
     };

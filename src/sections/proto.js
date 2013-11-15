@@ -3,6 +3,8 @@ sections.proto = new sections.events.EventEmitter();
 sections.proto.init = function () {
   this.__started = false;
   this.__init = true;
+  this.__prefix = null;
+  this.detectCSSPrefix();
   this.getSections();
   this.updateWindowSize();
   this.getScrollHeight();
@@ -12,6 +14,10 @@ sections.proto.init = function () {
   this.updateProgress();
   this.lazyApply();
   return this;
+};
+
+sections.proto.detectCSSPrefix = function () {
+  this.__prefix = sections.utils.getVendorPrefix();
 };
 
 sections.proto.getScrollHeight = function () {
@@ -25,7 +31,7 @@ sections.proto.getSections = function () {
   this.sections = [];
   var elements = document.getElementsByClassName(this.config.className);
   sections.utils.forEach(elements, (function (element) {
-    this.sections.push(new sections.Section(element));
+    this.sections.push(new sections.Section(element, this));
   }).bind(this));
   return this;
 };

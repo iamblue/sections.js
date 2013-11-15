@@ -1,6 +1,7 @@
 sections.Section = (function () {
-  var Section = function (element) {
+  var Section = function (element, sections_) {
     sections.events.EventEmitter.call(this);
+    this.sections = sections_;
     this.element = element;
     this.updatePosition();
     this.progress = 0;
@@ -90,16 +91,12 @@ sections.Section = (function () {
     var targets = this.__transitionTargets;
     var targetValues = [];
     var forEach = sections.utils.forEach;
-    forEach(transitions, function (transition, i) {
+    forEach(transitions, (function (transition, i) {
       var target = transition.getTarget();
       var values = targetValues[target] || sections.utils.getInlineCSS(targets[target]);
-      var value = transition.update(progress);
-      var keys = transition.getKeys();
-      forEach(keys, function (key) {
-        values[key] = value;
-      });
+      values[transition.getKey(transition.prefix ? this.sections.__prefix : null)] = transition.update(progress);
       targetValues[target] = values;
-    });
+    }).bind(this));
     forEach(targetValues, function (values, i) {
       sections.utils.setInlineCSS(targets[i], values);
     });

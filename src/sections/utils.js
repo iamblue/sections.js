@@ -40,3 +40,18 @@ sections.utils.forEach = function (array, callback) {
     }
   }
 };
+
+sections.utils.getVendorPrefix = function () {
+  var getStyle = window.getComputedStyle;
+  var prefix;
+  if (getStyle) {
+    var style = getStyle(document.documentElement, '');
+    var match;
+    style = Array.prototype.join.call(style, '');
+    match = style.match(/-(?:O|Moz|webkit|ms)-/i);
+    if (match) {
+      prefix = match[0];
+    }
+  }
+  return prefix;
+};

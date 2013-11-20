@@ -70,8 +70,13 @@ sections.Section = (function () {
   Section.prototype.transitions = function (transitions) {
     var newTransitions = this.__transitions;
     sections.utils.forEach(transitions, (function (transition, i) {
-      transition.target = this.setTarget(transition.target);
-      newTransitions.push(new sections.Transition(transition));
+      transition.target = transition.target || transition.targets || [];
+      var targets = (transition.target instanceof Array) ? transition.target : [transition.target];
+      sections.utils.forEach(targets, (function (target, i) {
+        var data = sections.utils.clone(transition);
+        data.target = this.setTarget(transition.target);
+        newTransitions.push(new sections.Transition(data));
+      }).bind(this));
     }).bind(this));
     return this;
   };

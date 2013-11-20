@@ -1,4 +1,4 @@
-/*! sectionsjs - v0.0.5 - 2013-11-15 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
+/*! sectionsjs - v0.0.6 - 2013-11-20 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
 
 (function(window, document) {
     "use strict";
@@ -61,6 +61,16 @@
             }
         }
         return prefix;
+    };
+    sections.utils.clone = function(obj) {
+        var newObj = {};
+        var prop;
+        for (prop in obj) {
+            if (obj.hasOwnProperty(prop)) {
+                newObj[prop] = obj[prop];
+            }
+        }
+        return newObj;
     };
     sections.events = {};
     sections.events.EventEmitter = function() {
@@ -268,8 +278,13 @@
         Section.prototype.transitions = function(transitions) {
             var newTransitions = this.__transitions;
             sections.utils.forEach(transitions, function(transition, i) {
-                transition.target = this.setTarget(transition.target);
-                newTransitions.push(new sections.Transition(transition));
+                transition.target = transition.target || transition.targets || [];
+                var targets = transition.target instanceof Array ? transition.target : [ transition.target ];
+                sections.utils.forEach(targets, function(target, i) {
+                    var data = sections.utils.clone(transition);
+                    data.target = this.setTarget(transition.target);
+                    newTransitions.push(new sections.Transition(data));
+                }.bind(this));
             }.bind(this));
             return this;
         };

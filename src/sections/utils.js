@@ -55,3 +55,14 @@ sections.utils.getVendorPrefix = function () {
   }
   return prefix;
 };
+
+sections.utils.clone = function (obj) {
+  var newObj = {};
+  var prop;
+  for (prop in obj) {
+    if (obj.hasOwnProperty(prop)) {
+      newObj[prop] = obj[prop];
+    }
+  }
+  return newObj;
+};

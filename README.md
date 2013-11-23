@@ -77,8 +77,26 @@ Get a section and wrap it into the function.
 * `end`: bj4
 * `from`: bj4
 * `to`: bj4
+* `values`: use this option when you have more then one variable will be changed. (ex. [{from: 0, to: 10}, ...])
 * `format`: bj4
 * `target`, `targets`: html element (can be an Array)
+* `easeing`:
+    default
+    ```
+    easeing: function (progress, from, to) {
+      return (to - from) / 100 * progress + from;
+    }
+    ```
+    more then one variable
+    ```
+    easeing: function (progress, values) {
+      var re = [];
+      values.forEach(function (value) {
+        re.push((value.to - value.from) / 100 * progress + value.from);
+      });
+      return re;
+    }
+    ```
 
 ## Section API
 

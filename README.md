@@ -81,22 +81,22 @@ Get a section and wrap it into the function.
 * `format`: bj4
 * `target`, `targets`: html element (can be an Array)
 * `easeing`:
+
     default
-    ```
-    easeing: function (progress, from, to) {
-      return (to - from) / 100 * progress + from;
-    }
-    ```
+
+        easeing: function (progress, from, to) {
+          return (to - from) / 100 * progress + from;
+        }
+
     more then one variable
-    ```
-    easeing: function (progress, values) {
-      var re = [];
-      values.forEach(function (value) {
-        re.push((value.to - value.from) / 100 * progress + value.from);
-      });
-      return re;
-    }
-    ```
+
+        easeing: function (progress, values) {
+          var re = [];
+          values.forEach(function (value) {
+            re.push((value.to - value.from) / 100 * progress + value.from);
+          });
+          return re;
+        }
 
 ## Section API
 

@@ -88,16 +88,6 @@ Get a section and wrap it into the function.
           return (to - from) / 100 * progress + from;
         }
 
-    more then one variable
-
-        easeing: function (progress, values) {
-          var re = [];
-          values.forEach(function (value) {
-            re.push((value.to - value.from) / 100 * progress + value.from);
-          });
-          return re;
-        }
-
 ## Section API
 
 All section are instance of EventEmitter.

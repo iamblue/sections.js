@@ -10,7 +10,10 @@ sections.Transition = (function () {
     progress = this.getProgress(progress);
     if (easeing) {
       if (this.__options.values) {
-        values = easeing(progress, this.__options.values);
+        values = [];
+        sections.utils.forEach(this.__options.values, function (value) {
+          values.push(easeing(progress, value.from, value.to));
+        });
       } else {
         values = [easeing(progress, this.__options.from, this.__options.to)];
       }

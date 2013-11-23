@@ -6,10 +6,14 @@ sections.Transition = (function () {
 
   Transition.prototype.update = function (progress) {
     var values;
-    var handler = this.__options.handler;
+    var easeing = this.__options.easeing;
     progress = this.getProgress(progress);
-    if (handler) {
-      values = handler(progress, this.__options.from, this.__options.to);
+    if (easeing) {
+      if (this.__options.values) {
+        values = easeing(progress, this.__options.values);
+      } else {
+        values = [easeing(progress, this.__options.from, this.__options.to)];
+      }
     } else {
       values = this.getValue(progress);
     }
@@ -86,7 +90,7 @@ sections.Transition = (function () {
     to: 0,
     values: null,  // css transition, scale(%s) rotate(%sdeg)
     format: '%s',
-    handler: null,
+    easeing: null,
     target: null,
     prefix: false
   };

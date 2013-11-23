@@ -1,4 +1,4 @@
-/*! sectionsjs - v0.0.8 - 2013-11-23 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
+/*! sectionsjs - v0.0.9 - 2013-11-23 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
 
 (function(window, document) {
     "use strict";
@@ -6,7 +6,6 @@
     sections.config = {
         className: "section",
         marginTop: 0,
-        interval: 200,
         autoSectionHeight: true
     };
     sections.utils = {};
@@ -130,10 +129,14 @@
         };
         Transition.prototype.update = function(progress) {
             var values;
-            var handler = this.__options.handler;
+            var easeing = this.__options.easeing;
             progress = this.getProgress(progress);
-            if (handler) {
-                values = handler(progress, this.__options.from, this.__options.to);
+            if (easeing) {
+                if (this.__options.values) {
+                    values = easeing(progress, this.__options.values);
+                } else {
+                    values = [ easeing(progress, this.__options.from, this.__options.to) ];
+                }
             } else {
                 values = this.getValue(progress);
             }
@@ -204,7 +207,7 @@
             to: 0,
             values: null,
             format: "%s",
-            handler: null,
+            easeing: null,
             target: null,
             prefix: false
         };

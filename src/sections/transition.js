@@ -6,16 +6,16 @@ sections.Transition = (function () {
 
   Transition.prototype.update = function (progress) {
     var values;
-    var easeing = this.__options.easeing;
+    var easing = this.__options.easing;
     progress = this.getProgress(progress);
-    if (easeing) {
+    if (easing) {
       if (this.__options.values) {
         values = [];
         sections.utils.forEach(this.__options.values, function (value) {
-          values.push(easeing(progress, value.from, value.to));
+          values.push(easing(progress, value.from, value.to));
         });
       } else {
-        values = [easeing(progress, this.__options.from, this.__options.to)];
+        values = [easing(progress, this.__options.from, this.__options.to)];
       }
     } else {
       values = this.getValue(progress);
@@ -93,7 +93,7 @@ sections.Transition = (function () {
     to: 0,
     values: null,  // css transition, scale(%s) rotate(%sdeg)
     format: '%s',
-    easeing: null,
+    easing: null,
     target: null,
     prefix: false
   };

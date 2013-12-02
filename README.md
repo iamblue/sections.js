@@ -80,11 +80,11 @@ Get a section and wrap it into the function.
 * `values`: use this option when you have more then one variable will be changed. (ex. [{from: 0, to: 10}, ...])
 * `format`: bj4
 * `target`, `targets`: html element (can be an Array)
-* `easeing`:
+* `easing`:
 
     default
 
-        easeing: function (progress, from, to) {
+        easing: function (progress, from, to) {
           return (to - from) / 100 * progress + from;
         }
 

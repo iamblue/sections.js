@@ -1,4 +1,4 @@
-/*! sectionsjs - v0.0.9 - 2013-11-23 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
+/*! sectionsjs - v0.1.0 - 2013-12-02 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
 
 (function(window, document) {
     "use strict";
@@ -10,12 +10,16 @@
     };
     sections.utils = {};
     sections.utils.getInlineCSS = function(element) {
+        if (element.__style) {
+            return element.__style;
+        }
         var style = element.getAttribute("style") || "";
         var regexp = /([^:\s]+)\s*:\s*([^;]+)/g;
         var data = {};
         style.replace(regexp, function(origin, key, value) {
             data[key] = value.trim();
         });
+        element.__style = data;
         return data;
     };
     sections.utils.setInlineCSS = function(element, style) {
@@ -129,13 +133,16 @@
         };
         Transition.prototype.update = function(progress) {
             var values;
-            var easeing = this.__options.easeing;
+            var easing = this.__options.easing;
             progress = this.getProgress(progress);
-            if (easeing) {
+            if (easing) {
                 if (this.__options.values) {
-                    values = easeing(progress, this.__options.values);
+                    values = [];
+                    sections.utils.forEach(this.__options.values, function(value) {
+                        values.push(easing(progress, value.from, value.to));
+                    });
                 } else {
-                    values = [ easeing(progress, this.__options.from, this.__options.to) ];
+                    values = [ easing(progress, this.__options.from, this.__options.to) ];
                 }
             } else {
                 values = this.getValue(progress);
@@ -207,7 +214,7 @@
             to: 0,
             values: null,
             format: "%s",
-            easeing: null,
+            easing: null,
             target: null,
             prefix: false
         };

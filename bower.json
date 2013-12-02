@@ -1,6 +1,6 @@
 {
   "name": "sections.js",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "main": "dist/sectionsjs.js",
   "homepage": "https://github.com/poying/sections.js",
   "authors": [

@@ -1,12 +1,16 @@
 sections.utils = {};
 
 sections.utils.getInlineCSS = function (element) {
+  if (element.__style) {
+    return element.__style;
+  }
   var style = element.getAttribute('style') || '';
   var regexp = /([^:\s]+)\s*:\s*([^;]+)/g;
   var data = {};
   style.replace(regexp, function (origin, key, value) {
     data[key] = value.trim();
   });
+  element.__style = data;
   return data;
 };
 

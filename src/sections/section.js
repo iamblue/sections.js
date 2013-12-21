@@ -99,7 +99,7 @@ sections.Section = (function () {
     forEach(transitions, (function (transition, i) {
       var target = transition.getTarget();
       var values = targetValues[target] || sections.utils.getInlineCSS(targets[target]);
-      values[transition.getKey(transition.prefix ? this.sections.__prefix : null)] = transition.update(progress);
+      values[transition.getKey(transition.__options.prefix ? this.sections.__prefix : null)] = transition.update(progress);
       targetValues[target] = values;
     }).bind(this));
     forEach(targetValues, function (values, i) {

@@ -65,7 +65,9 @@ sections.Transition = (function () {
 
   Transition.prototype.getKey = function (prefix) {
     var key = this.__options.key;
-    prefix && (key = prefix + key);
+    if (prefix) {
+      key = prefix + key[0].toUpperCase() + key.slice(1);
+    }
     return key;
   };
 

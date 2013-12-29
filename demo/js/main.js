@@ -19,9 +19,19 @@ page.section(1, function (section) {
       to: 1,
       format: '%s',
       target: target,
-      easeing: function (progress, from, to) {
+      easing: function (progress, from, to) {
         return (to - from) / 100 * progress + from; // default
       }
+    },
+    {
+      key: 'transform',
+      start: 10,
+      end: 200,
+      from: 0,
+      to: 500,
+      format: 'translate3d(%spx, 0, 0)',
+      target: target,
+      prefix: true
     }
   ]);
   section.on('progress', function (progress) {

@@ -19,7 +19,13 @@ sections.proto.init = function () {
 };
 
 sections.proto.detectCSSPrefix = function () {
-  this.__prefix = sections.utils.getVendorPrefix();
+  var map = {
+    '-webkit-': 'webkit',
+    '-moz-': 'Moz',
+    '-ms-': 'ms',
+    '-o-': 'O'
+  };
+  this.__prefix = map[sections.utils.getVendorPrefix()];
 };
 
 sections.proto.getScrollHeight = function () {
@@ -39,6 +45,7 @@ sections.proto.getSections = function () {
 };
 
 sections.proto.start = function () {
+  this.onScrollHandler();
   if (this.__init && !this.__started) {
     window.addEventListener('scroll', this.onScrollHandler);
     this.__started = true;

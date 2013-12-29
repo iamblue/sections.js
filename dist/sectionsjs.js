@@ -190,7 +190,9 @@
         };
         Transition.prototype.getKey = function(prefix) {
             var key = this.__options.key;
-            prefix && (key = prefix + key);
+            if (prefix) {
+                key = prefix + key[0].toUpperCase() + key.slice(1);
+            }
             return key;
         };
         Transition.prototype.getTarget = function() {
@@ -310,17 +312,12 @@
         Section.prototype.runTransition = function(progress) {
             var transitions = this.__transitions;
             var targets = this.__transitionTargets;
-            var targetValues = [];
             var forEach = sections.utils.forEach;
             forEach(transitions, function(transition, i) {
                 var target = transition.getTarget();
-                var values = targetValues[target] || sections.utils.getInlineCSS(targets[target]);
+                var values = targets[target].style;
                 values[transition.getKey(transition.__options.prefix ? this.sections.__prefix : null)] = transition.update(progress);
-                targetValues[target] = values;
             }.bind(this));
-            forEach(targetValues, function(values, i) {
-                sections.utils.setInlineCSS(targets[i], values);
-            });
         };
         return Section;
     }();
@@ -343,7 +340,13 @@
         return this;
     };
     sections.proto.detectCSSPrefix = function() {
-        this.__prefix = sections.utils.getVendorPrefix();
+        var map = {
+            "-webkit-": "webkit",
+            "-moz-": "Moz",
+            "-ms-": "ms",
+            "-o-": "O"
+        };
+        this.__prefix = map[sections.utils.getVendorPrefix()];
     };
     sections.proto.getScrollHeight = function() {
         var body = document.body;
@@ -360,6 +363,7 @@
         return this;
     };
     sections.proto.start = function() {
+        this.onScrollHandler();
         if (this.__init && !this.__started) {
             window.addEventListener("scroll", this.onScrollHandler);
             this.__started = true;

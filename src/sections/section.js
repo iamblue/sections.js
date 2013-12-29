@@ -94,17 +94,12 @@ sections.Section = (function () {
   Section.prototype.runTransition = function (progress) {
     var transitions = this.__transitions;
     var targets = this.__transitionTargets;
-    var targetValues = [];
     var forEach = sections.utils.forEach;
     forEach(transitions, (function (transition, i) {
       var target = transition.getTarget();
-      var values = targetValues[target] || sections.utils.getInlineCSS(targets[target]);
+      var values = targets[target].style;
       values[transition.getKey(transition.__options.prefix ? this.sections.__prefix : null)] = transition.update(progress);
-      targetValues[target] = values;
     }).bind(this));
-    forEach(targetValues, function (values, i) {
-      sections.utils.setInlineCSS(targets[i], values);
-    });
   };
 
   return Section;

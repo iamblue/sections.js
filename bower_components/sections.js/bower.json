@@ -1,6 +1,7 @@
 {
-  "name": "sectionsjs-homepage",
+  "name": "sections.js",
   "version": "0.1.2",
+  "main": "dist/sectionsjs.js",
   "homepage": "https://github.com/poying/sections.js",
   "authors": [
     "Po-Ying Chen <poying.me@gmail.com>"
@@ -11,9 +12,8 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests"
-  ],
-  "dependencies": {
-    "sections.js": "~0.1.2"
-  }
+    "tests",
+    "src",
+    "demo"
+  ]
 }

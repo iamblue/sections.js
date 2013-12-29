@@ -1,4 +1,4 @@
-/*! sectionsjs - v0.1.1 - 2013-12-29 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
+/*! sectionsjs - v0.1.2 - 2013-12-29 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
 
 (function(window, document) {
     "use strict";

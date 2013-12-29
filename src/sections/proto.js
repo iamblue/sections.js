@@ -3,6 +3,7 @@ sections.proto = new sections.events.EventEmitter();
 sections.proto.init = function () {
   this.__started = false;
   this.__init = true;
+  this.__running = false;
   this.__prefix = null;
   this.detectCSSPrefix();
   this.getSections();
@@ -12,6 +13,8 @@ sections.proto.init = function () {
   this.addScrollHandler();
   this.updateProgress();
   this.lazyApply();
+  this.onScrollHandler = this.onScrollHandler.bind(this);
+  this.loop = this.loop.bind(this);
   return this;
 };
 
@@ -36,40 +39,47 @@ sections.proto.getSections = function () {
 };
 
 sections.proto.start = function () {
-  if (!this.__started) {
+  if (this.__init && !this.__started) {
+    window.addEventListener('scroll', this.onScrollHandler);
     this.__started = true;
     this.emit('started');
-    this.loop();
   }
   return this;
 };
 
 sections.proto.stop = function () {
-  this.cancelAnimationFrame(this.__intervalID);
-  this.__started = false;
-  this.emit('stopped');
+  if (this.__started) {
+    window.removeEventListener('scroll', this.onScrollHandler);
+    this.__started = false;
+    this.emit('stopped');
+  }
+};
+
+sections.proto.onScrollHandler = function () {
+  if (this.__running) {
+    return;
+  }
+  this.__running = true;
+  this.__intervalID = this.requestAnimationFrame(this.loop);
 };
 
 sections.proto.loop = function () {
-  var step = (function () {
-    var scrollOffset = {x: 0, y: 0};
-    if (window.pageYOffset) {
-      scrollOffset.y = window.pageYOffset;
-      scrollOffset.x = window.pageXOffset;
-    } else if (document.body && document.body.scrollLeft) {
-      scrollOffset.y = document.body.scrollTop;
-      scrollOffset.x = document.body.scrollLeft;
-    } else if (document.documentElement && document.documentElement.scrollLeft) {
-      scrollOffset.y = document.documentElement.scrollTop;
-      scrollOffset.x = document.documentElement.scrollLeft;
-    }
-    this.top = scrollOffset.y;
-    this.left = scrollOffset.x;
-    this.checkCurrentSection();
-    this.updateProgress();
-    this.__intervalID = this.requestAnimationFrame(step);
-  }).bind(this);
-  step();
+  var scrollOffset = {x: 0, y: 0};
+  if (window.pageYOffset) {
+    scrollOffset.y = window.pageYOffset;
+    scrollOffset.x = window.pageXOffset;
+  } else if (document.body && document.body.scrollLeft) {
+    scrollOffset.y = document.body.scrollTop;
+    scrollOffset.x = document.body.scrollLeft;
+  } else if (document.documentElement && document.documentElement.scrollLeft) {
+    scrollOffset.y = document.documentElement.scrollTop;
+    scrollOffset.x = document.documentElement.scrollLeft;
+  }
+  this.top = scrollOffset.y;
+  this.left = scrollOffset.x;
+  this.checkCurrentSection();
+  this.updateProgress();
+  this.__running = false;
 };
 
 sections.proto.requestAnimationFrame = (function () {

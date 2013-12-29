@@ -19,7 +19,6 @@ page.section(1, function (section) {
       to: 1,
       format: '%s',
       target: target,
-      prefix: true,
       easeing: function (progress, from, to) {
         return (to - from) / 100 * progress + from; // default
       }

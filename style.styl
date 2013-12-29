@@ -19,27 +19,11 @@ body
 
 a
   text-decoration: none
+  color: $text-color
 
 .section
-  min-height: 768px
+  min-height: 568px
   position: relative
-
-  &:nth-child(even)
-    color: $background-color
-
-    &:after
-      position: absolute
-      z-index: -1
-      content: ''
-      width: 120%
-      height: 110%
-      top: -5%
-      left: 0%
-      transform: perspective(600px) rotateY(4deg) translateZ(0)
-      background: $text-color
-
-.section--first
-  min-height: 300px
 
 .section--first__title
   position: absolute
@@ -155,3 +139,40 @@ a
     top: 8px
   to
     top: 12px
+
+.section--nko
+  max-height: 300px
+  min-height: 300px
+  color: $background-color
+  background: $text-color
+  text-align: center
+  line-height: 300px
+  font-size: 2em
+
+  a
+    color: $background-color
+    border-bottom: 1px $background-color dashed
+
+  &:after
+  &:before
+    position: absolute
+    z-index: -1
+    content: ''
+    width: 120%
+    height: 50px
+    left: 0%
+    background: $text-color
+
+  &:before
+    top: -20px
+    transform: rotate(2deg) translateZ(0)
+
+  &:after
+    bottom: -20px
+    transform: rotate(-2deg) translateZ(0)
+
+.section--lol
+  max-height: 200px
+  min-height: 200px
+  text-align: center
+  line-height: 200px

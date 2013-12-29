@@ -103,31 +103,11 @@ body {
 }
 a {
   text-decoration: none;
+  color: #f5ece0;
 }
 .section {
-  min-height: 768px;
+  min-height: 568px;
   position: relative;
-}
-.section:nth-child(even) {
-  color: #2b2a2b;
-}
-.section:nth-child(even):after {
-  position: absolute;
-  z-index: -1;
-  content: '';
-  width: 120%;
-  height: 110%;
-  top: -5%;
-  left: 0%;
-  -webkit-transform: perspective(600px) rotateY(4deg) translateZ(0);
-  -moz-transform: perspective(600px) rotateY(4deg) translateZ(0);
-  -o-transform: perspective(600px) rotateY(4deg) translateZ(0);
-  -ms-transform: perspective(600px) rotateY(4deg) translateZ(0);
-  transform: perspective(600px) rotateY(4deg) translateZ(0);
-  background: #f5ece0;
-}
-.section--first {
-  min-height: 300px;
 }
 .section--first__title {
   position: absolute;
@@ -263,6 +243,51 @@ a {
   -o-transform: translateZ(0);
   -ms-transform: translateZ(0);
   transform: translateZ(0);
+}
+.section--nko {
+  max-height: 300px;
+  min-height: 300px;
+  color: #2b2a2b;
+  background: #f5ece0;
+  text-align: center;
+  line-height: 300px;
+  font-size: 2em;
+}
+.section--nko a {
+  color: #2b2a2b;
+  border-bottom: 1px #2b2a2b dashed;
+}
+.section--nko:after,
+.section--nko:before {
+  position: absolute;
+  z-index: -1;
+  content: '';
+  width: 120%;
+  height: 50px;
+  left: 0%;
+  background: #f5ece0;
+}
+.section--nko:before {
+  top: -20px;
+  -webkit-transform: rotate(2deg) translateZ(0);
+  -moz-transform: rotate(2deg) translateZ(0);
+  -o-transform: rotate(2deg) translateZ(0);
+  -ms-transform: rotate(2deg) translateZ(0);
+  transform: rotate(2deg) translateZ(0);
+}
+.section--nko:after {
+  bottom: -20px;
+  -webkit-transform: rotate(-2deg) translateZ(0);
+  -moz-transform: rotate(-2deg) translateZ(0);
+  -o-transform: rotate(-2deg) translateZ(0);
+  -ms-transform: rotate(-2deg) translateZ(0);
+  transform: rotate(-2deg) translateZ(0);
+}
+.section--lol {
+  max-height: 200px;
+  min-height: 200px;
+  text-align: center;
+  line-height: 200px;
 }
 @-moz-keyframes wheel-animate {
   0% {

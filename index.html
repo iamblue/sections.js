@@ -43,6 +43,37 @@ page.section(1, function (section) {
     //console.log(progress);
   });
 });
+
+page.section(1, function (section) {
+  var target = document.querySelector('#section-2-opacity');
+  section.transitions([
+    {
+      key: 'opacity',
+      start: 0,
+      end: 100,
+      from: 0,
+      to: 1,
+      format: '%s',
+      target: target,
+      easing: function (progress, from, to) {
+        return (to - from) / 100 * progress + from; // default
+      }
+    },
+    {
+      key: 'transform',
+      start: 10,
+      end: 200,
+      from: 0,
+      to: 500,
+      format: 'translate3d(%spx, 0, 0)',
+      target: target,
+      prefix: true
+    }
+  ]);
+  section.on('progress', function (progress) {
+    //console.log(progress);
+  });
+});
 </code></pre>
     <a class="section--first__github" href="https://github.com/poying/sections.js">Fork me on GitHub</a>
     <div class="section--first__mouse"><div class="section--first__mouse__wheel"></div></div>

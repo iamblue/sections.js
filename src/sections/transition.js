@@ -13,14 +13,13 @@ sections.Transition = (function () {
       if (this.__options.values) {
         values = [];
         sections.utils.forEach(this.__options.values, function (value) {
-          before(progress, value.from, value.to);
           values.push(after(easing(progress, value.from, value.to)));
         });
       } else {
         values = [after(easing(progress, this.__options.from, this.__options.to))];
       }
     } else {
-      values = after(this.getValue(progress));
+      values = this.getValue(progress);
     }
     return Transition.format(this.__options.format, values);
   };
@@ -45,16 +44,17 @@ sections.Transition = (function () {
   Transition.prototype.getValue = function (progress) {
     var cssValue;
     var values = this.__options.values;
+    var after = this.__options.after;
     if (values) {
       var value;
       var i, len = values.length;
       cssValue = [];
       for (i = 0; i < len; i += 1) {
         value = values[i];
-        cssValue.push(this.calcValue(value, progress));
+        cssValue.push(after(this.calcValue(value, progress)));
       }
     } else {
-      cssValue = [this.calcValue(this.__options, progress)];
+      cssValue = [after(this.calcValue(this.__options, progress))];
     }
     return cssValue;
   };

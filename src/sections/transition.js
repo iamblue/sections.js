@@ -7,7 +7,7 @@ sections.Transition = (function () {
   Transition.prototype.update = function (progress) {
     var values;
     var easing = this.__options.easing;
-    var after = this.__options.afterCalculate || function (v) {return v;};
+    var after = this.__options.afterCalculate;
     progress = this.getProgress(progress);
     if (easing) {
       if (this.__options.values) {
@@ -99,7 +99,10 @@ sections.Transition = (function () {
     format: '%s',
     easing: null,
     target: null,
-    prefix: false
+    prefix: false,
+    afterCalculate: function (val) {
+      return val;
+    }
   };
 
   Transition.format = function (format, values) {

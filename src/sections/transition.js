@@ -7,18 +7,20 @@ sections.Transition = (function () {
   Transition.prototype.update = function (progress) {
     var values;
     var easing = this.__options.easing;
+    var after = this.__options.afterCalculate || function (v) {return v;};
     progress = this.getProgress(progress);
     if (easing) {
       if (this.__options.values) {
         values = [];
         sections.utils.forEach(this.__options.values, function (value) {
-          values.push(easing(progress, value.from, value.to));
+          before(progress, value.from, value.to);
+          values.push(after(easing(progress, value.from, value.to)));
         });
       } else {
-        values = [easing(progress, this.__options.from, this.__options.to)];
+        values = [after(easing(progress, this.__options.from, this.__options.to))];
       }
     } else {
-      values = this.getValue(progress);
+      values = after(this.getValue(progress));
     }
     return Transition.format(this.__options.format, values);
   };

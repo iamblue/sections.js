@@ -171,7 +171,7 @@
         Transition.prototype.getValue = function(progress) {
             var cssValue;
             var values = this.__options.values;
-            var after = this.__options.after;
+            var after = this.__options.afterCalculate;
             if (values) {
                 var value;
                 var i, len = values.length;

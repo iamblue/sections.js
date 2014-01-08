@@ -60,6 +60,15 @@ sections.utils.getVendorPrefix = function () {
   return prefix;
 };
 
+sections.utils.needPrefix = function (key) {
+  var getStyle = window.getComputedStyle;
+  if (getStyle) {
+    var r = new RegExp('^-\\w+-' + (key || ''), 'm');
+    return r.test(Array.prototype.join.call(getStyle(document.body), '\n'));
+  }
+  return false;
+};
+
 sections.utils.clone = function (obj) {
   var newObj = {};
   var prop;

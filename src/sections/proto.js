@@ -15,6 +15,8 @@ sections.proto.init = function () {
   this.lazyApply();
   this.onScrollHandler = this.onScrollHandler.bind(this);
   this.loop = this.loop.bind(this);
+
+  this.onScrollHandler();
   return this;
 };
 

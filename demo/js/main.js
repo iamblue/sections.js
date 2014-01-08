@@ -30,8 +30,7 @@ page.section(1, function (section) {
       from: 0,
       to: 500,
       format: 'translate3d(%spx, 0, 0)',
-      target: target,
-      prefix: true
+      target: target
     }
   ]);
   section.on('progress', function (progress) {

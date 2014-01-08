@@ -1,4 +1,4 @@
-/*! sectionsjs - v0.1.2 - 2014-01-02 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
+/*! sectionsjs - v0.1.2 - 2014-01-08 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
 
 (function(window, document) {
     "use strict";
@@ -64,6 +64,14 @@
             }
         }
         return prefix;
+    };
+    sections.utils.needPrefix = function(key) {
+        var getStyle = window.getComputedStyle;
+        if (getStyle) {
+            var r = new RegExp("^-\\w+-" + (key || ""), "m");
+            return r.test(Array.prototype.join.call(getStyle(document.body), "\n"));
+        }
+        return false;
     };
     sections.utils.clone = function(obj) {
         var newObj = {};
@@ -296,6 +304,7 @@
             var newTransitions = this.__transitions;
             sections.utils.forEach(transitions, function(transition, i) {
                 transition.target = transition.target || transition.targets || [];
+                transition.prefix === undefined && (transition.prefix = sections.utils.needPrefix(transition.key));
                 var targets = transition.target instanceof Array ? transition.target : [ transition.target ];
                 sections.utils.forEach(targets, function(target, i) {
                     var data = sections.utils.clone(transition);
@@ -342,6 +351,7 @@
         this.lazyApply();
         this.onScrollHandler = this.onScrollHandler.bind(this);
         this.loop = this.loop.bind(this);
+        this.onScrollHandler();
         return this;
     };
     sections.proto.detectCSSPrefix = function() {

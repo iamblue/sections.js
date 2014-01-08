@@ -71,6 +71,7 @@ sections.Section = (function () {
     var newTransitions = this.__transitions;
     sections.utils.forEach(transitions, (function (transition, i) {
       transition.target = transition.target || transition.targets || [];
+      transition.prefix === undefined && (transition.prefix = sections.utils.needPrefix(transition.key));
       var targets = (transition.target instanceof Array) ? transition.target : [transition.target];
       sections.utils.forEach(targets, (function (target, i) {
         var data = sections.utils.clone(transition);

@@ -1,10 +1,11 @@
-/*! sectionsjs - v0.1.3 - 2014-01-08 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
+/*! sectionsjs - v0.1.3 - 2014-01-15 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
 
 (function(window, document) {
     "use strict";
     var sections = window.sections = {};
     sections.config = {
         className: "section",
+        containerClassName: "section__container",
         marginTop: 0,
         autoSectionHeight: true
     };
@@ -242,12 +243,16 @@
         return Transition;
     }();
     sections.Section = function() {
-        var Section = function(element, sections_) {
+        var Section = function(element, container, sections_) {
             sections.events.EventEmitter.call(this);
             this.sections = sections_;
             this.element = element;
+            this.container = container || {
+                style: {}
+            };
             this.updatePosition();
             this.progress = 0;
+            this.visible = true;
             this.__transitions = [];
             this.__transitionTargets = [];
         };
@@ -270,6 +275,18 @@
                 top: y,
                 left: x
             };
+        };
+        Section.prototype.show = function() {
+            if (!this.visible) {
+                this.container.style.display = "block";
+                this.visible = true;
+            }
+        };
+        Section.prototype.hide = function() {
+            if (this.visible) {
+                this.container.style.display = "none";
+                this.visible = false;
+            }
         };
         Section.prototype.getCSS = function(key) {
             var css = sections.utils.getInlineCSS(this.element);
@@ -373,7 +390,8 @@
         this.sections = [];
         var elements = document.getElementsByClassName(this.config.className);
         sections.utils.forEach(elements, function(element) {
-            this.sections.push(new sections.Section(element, this));
+            var container = element.querySelector("." + this.config.containerClassName);
+            this.sections.push(new sections.Section(element, container, this));
         }.bind(this));
         return this;
     };
@@ -459,17 +477,24 @@
     };
     sections.proto.checkCurrentSection = function() {
         var prevIndex = this.__currentIndex;
+        var done = false;
+        var thisBottom = this.top + this.height;
         this.each(function(index, section) {
-            if (this.top >= section.top && this.top < section.top + section.getHeight() && index !== prevIndex) {
+            var sectionBottom = section.top + section.getHeight();
+            if (!done && this.top >= section.top && this.top < sectionBottom && index !== prevIndex) {
                 this.__currentIndex = index;
                 var prev = this.get(prevIndex);
-                var current = this.get(index);
-                this.emit("changed", current, prev);
+                this.emit("changed", section, prev);
                 if (prev) {
                     prev.emit("scrollOut", prevIndex < index ? 1 : -1);
                 }
-                current.emit("scrollIn", prevIndex > index ? 1 : -1);
-                return false;
+                section.emit("scrollIn", prevIndex > index ? 1 : -1);
+                done = true;
+            }
+            if (this.top > sectionBottom || section.top > thisBottom) {
+                section.hide();
+            } else {
+                section.show();
             }
         }.bind(this));
         return this;

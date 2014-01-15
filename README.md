@@ -68,9 +68,9 @@ Get section by index.
 
 Get a section and wrap it into the function.
 
-### .transitions(options)
+### .transitions([transition, transition....])
 
-#### options
+#### transtion options
 
 * `key`: css key
 * `start`: bj4

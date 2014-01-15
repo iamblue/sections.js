@@ -38,6 +38,7 @@ sections.Section = (function () {
     if (!this.visible) {
       this.container.style.display = 'block';
       this.visible = true;
+      this.emit('show');
     }
   };
 
@@ -45,6 +46,7 @@ sections.Section = (function () {
     if (this.visible) {
       this.container.style.display = 'none';
       this.visible = false;
+      this.emit('hide');
     }
   };
 

@@ -41,7 +41,8 @@ sections.proto.getSections = function () {
   this.sections = [];
   var elements = document.getElementsByClassName(this.config.className);
   sections.utils.forEach(elements, (function (element) {
-    this.sections.push(new sections.Section(element, this));
+    var container = element.querySelector('.' + this.config.containerClassName);
+    this.sections.push(new sections.Section(element, container, this));
   }).bind(this));
   return this;
 };
@@ -140,17 +141,24 @@ sections.proto.addScrollHandler = function () {
 
 sections.proto.checkCurrentSection = function () {
   var prevIndex = this.__currentIndex;
+  var done = false;
+  var thisBottom = this.top + this.height;
   this.each((function (index, section) {
-    if (this.top >= section.top && this.top < section.top + section.getHeight() && index !== prevIndex) {
+    var sectionBottom = section.top + section.getHeight();
+    if (!done && this.top >= section.top && this.top < sectionBottom && index !== prevIndex) {
       this.__currentIndex = index;
       var prev = this.get(prevIndex);
-      var current = this.get(index);
-      this.emit('changed', current, prev);
+      this.emit('changed', section, prev);
       if (prev) {
         prev.emit("scrollOut", prevIndex < index ? 1 : -1);
       }
-      current.emit("scrollIn", prevIndex > index ? 1 : -1);
-      return false;
+      section.emit("scrollIn", prevIndex > index ? 1 : -1);
+      done = true;
+    }
+    if (this.top > sectionBottom || section.top > thisBottom) {
+      section.hide();
+    } else {
+      section.show();
     }
   }).bind(this));
   return this;

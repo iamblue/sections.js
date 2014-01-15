@@ -1,10 +1,12 @@
 sections.Section = (function () {
-  var Section = function (element, sections_) {
+  var Section = function (element, container, sections_) {
     sections.events.EventEmitter.call(this);
     this.sections = sections_;
     this.element = element;
+    this.container = container || {style: {}};
     this.updatePosition();
     this.progress = 0;
+    this.visible = true;
     this.__transitions = [];
     this.__transitionTargets = [];
   };
@@ -30,6 +32,20 @@ sections.Section = (function () {
       top: y,
       left: x
     };
+  };
+
+  Section.prototype.show = function () {
+    if (!this.visible) {
+      this.container.style.display = 'block';
+      this.visible = true;
+    }
+  };
+
+  Section.prototype.hide = function () {
+    if (this.visible) {
+      this.container.style.display = 'none';
+      this.visible = false;
+    }
   };
 
   Section.prototype.getCSS = function (key) {

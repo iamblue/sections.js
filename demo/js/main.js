@@ -1,9 +1,5 @@
 var page = sections.create();
 
-//page.on('changed', function (current, prev) {
-  //console.log('changed');
-//});
-
 //page.on('progress', function (progress) {
   //console.log('progress: %s', progress);
 //});

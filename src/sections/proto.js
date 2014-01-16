@@ -5,6 +5,7 @@ sections.proto.init = function () {
   this.__init = true;
   this.__running = false;
   this.__prefix = null;
+  this.__scrollAnimation = null;
   this.detectCSSPrefix();
   this.getSections();
   this.updateWindowSize();
@@ -239,4 +240,41 @@ sections.proto.each = function (fn) {
     };
   });
   return this;
+};
+
+sections.proto.animate = function (fn, speed) {
+  speed || (speed = 300);
+
+  var animate = {};
+
+  fn = fn.bind(animate);
+
+  animate.id = 0;
+  animate.startTime = 0;
+  animate.started = false;
+
+  animate.loop = (function () {
+    this.requestAnimationFrame(function () {
+      var progress = (Date.now() - animate.startTime) / speed * 100;
+      fn(progress);
+      animate.loop();
+    });
+  }).bind(this);
+
+  animate.stop = (function () {
+    this.cancelAnimationFrame(animate.id);
+    animate.started = false;
+    return animate;
+  }).bind(this);
+
+  animate.start = function () {
+    if (animate.started) {
+      return animate;
+    }
+    animate.started = true;
+    animate.loop();
+    return animate;
+  };
+
+  return animate;
 };

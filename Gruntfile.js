@@ -31,6 +31,7 @@ module.exports = function(grunt) {
           '<%= srcDir %>/sections/events.js',
           '<%= srcDir %>/sections/transition.js',
           '<%= srcDir %>/sections/section.js',
+          '<%= srcDir %>/sections/animate.js',
           '<%= srcDir %>/sections/proto.js',
           '<%= srcDir %>/sections/index.js',
           '<%= srcDir %>/footer.js'

@@ -20,6 +20,9 @@ sections.Sections = function (config) {
 
 sections.Sections.prototype = sections.proto;
 
+sections.requestAnimationFrame = sections.proto.requestAnimationFrame;
+sections.cancelAnimationFrame = sections.proto.cancelAnimationFrame;
+
 sections.create = function (config) {
   return new sections.Sections(config);
 };

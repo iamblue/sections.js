@@ -5,7 +5,7 @@ sections.proto.init = function () {
   this.__init = true;
   this.__running = false;
   this.__prefix = null;
-  this.__scrollAnimation = null;
+  this.__magneticTimer = null;
   this.detectCSSPrefix();
   this.getSections();
   this.updateWindowSize();
@@ -75,6 +75,8 @@ sections.proto.onScrollHandler = function () {
 };
 
 sections.proto.loop = function () {
+  // enable             // avoid repeat
+  this.config.magnet && this.__magneticAnimation === null && this.magnet();
   var scrollOffset = {x: 0, y: 0};
   if (window.pageYOffset) {
     scrollOffset.y = window.pageYOffset;
@@ -207,6 +209,10 @@ sections.proto.get = function (index) {
   return this.sections[index] || null;
 };
 
+sections.proto.getCurrentSection = function () {
+  return this.get(this.currentIndex());
+};
+
 sections.proto.section = function (index, fn) {
   if (!this.__init) {
     this.__lazyApply.push((function () {
@@ -242,39 +248,28 @@ sections.proto.each = function (fn) {
   return this;
 };
 
-sections.proto.animate = function (fn, speed) {
-  speed || (speed = 300);
+sections.proto.magnet = function () {
+  clearTimeout(this.__magneticTimer);
+  this.__magneticAnimation && this.__magneticAnimation.stop();
+  this.__magneticTimer = setTimeout((function () {
+    this.__magneticAnimation = this.scrollTo(this.getCurrentSection(), 1000);
+    this.__magneticAnimation.once('done', this.magnetDone.bind(this));
+    this.__magneticAnimation.start();
+  }).bind(this), 100);
+};
 
-  var animate = {};
+sections.proto.magnetDone = function () {
+  this.__magneticAnimation = null;
+};
 
-  fn = fn.bind(animate);
-
-  animate.id = 0;
-  animate.startTime = 0;
-  animate.started = false;
-
-  animate.loop = (function () {
-    this.requestAnimationFrame(function () {
-      var progress = (Date.now() - animate.startTime) / speed * 100;
-      fn(progress);
-      animate.loop();
-    });
-  }).bind(this);
-
-  animate.stop = (function () {
-    this.cancelAnimationFrame(animate.id);
-    animate.started = false;
-    return animate;
-  }).bind(this);
-
-  animate.start = function () {
-    if (animate.started) {
-      return animate;
-    }
-    animate.started = true;
-    animate.loop();
-    return animate;
-  };
-
+sections.proto.scrollTo = function (section, speed) {
+  if (!(section instanceof sections.Section)) {
+    section = this.get(section);
+  }
+  var total = section.top - this.top;
+  var top_ = this.top;
+  var animate = new sections.Animate(function (progress) {
+    document.body.scrollTop = top_ + total * progress;
+  }.bind(this), speed);
   return animate;
 };

@@ -71,7 +71,7 @@ sections.proto.onScrollHandler = function (e) {
   if (this.__running) {
     return;
   }
-  if (this.__magneticAnimation && this.__magneticAnimation.scrollTop !== document.body.scrollTop) {
+  if (this.__magneticAnimation && this.__magneticAnimation.scrollTop !== document.documentElement.scrollTop) {
     this.__magneticAnimation.stop();
   }
   this.__running = true;
@@ -85,9 +85,9 @@ sections.proto.loop = function () {
   if (window.pageYOffset) {
     scrollOffset.y = window.pageYOffset;
     scrollOffset.x = window.pageXOffset;
-  } else if (document.body && document.body.scrollLeft) {
-    scrollOffset.y = document.body.scrollTop;
-    scrollOffset.x = document.body.scrollLeft;
+  } else if (document.body && document.documentElement.scrollLeft) {
+    scrollOffset.y = document.documentElement.scrollTop;
+    scrollOffset.x = document.documentElement.scrollLeft;
   } else if (document.documentElement && document.documentElement.scrollLeft) {
     scrollOffset.y = document.documentElement.scrollTop;
     scrollOffset.x = document.documentElement.scrollLeft;
@@ -275,7 +275,7 @@ sections.proto.scrollTo = function (section, speed, easing) {
   var total = section.top - this.top;
   var top_ = this.top;
   var animate = new sections.Animate(function (progress) {
-    animate.scrollTop = document.body.scrollTop = (top_ + total * progress) | 0;
+    animate.scrollTop = document.documentElement.scrollTop = (top_ + total * progress) | 0;
   }.bind(this), speed, easing);
   return animate;
 };

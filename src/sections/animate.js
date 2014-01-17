@@ -27,6 +27,7 @@ sections.Animate = (function () {
   Animate.prototype.stop = function () {
     this.started && sections.cancelAnimationFrame(this.id);
     this.started = false;
+    this.emit('stopped');
     return this;
   };
 
@@ -34,6 +35,7 @@ sections.Animate = (function () {
     if (!this.started) {
       this.startTime = Date.now();
       this.started = true;
+      this.emit('started');
       this.loop();
     }
     return this;

@@ -6,6 +6,7 @@ sections.proto.init = function () {
   this.__running = false;
   this.__prefix = null;
   this.__magneticTimer = null;
+  this.__magneticAnimation = null;
   this.detectCSSPrefix();
   this.getSections();
   this.updateWindowSize();
@@ -66,9 +67,12 @@ sections.proto.stop = function () {
   }
 };
 
-sections.proto.onScrollHandler = function () {
+sections.proto.onScrollHandler = function (e) {
   if (this.__running) {
     return;
+  }
+  if (this.__magneticAnimation && this.__magneticAnimation.scrollTop !== document.body.scrollTop) {
+    this.__magneticAnimation.stop();
   }
   this.__running = true;
   this.__intervalID = this.requestAnimationFrame(this.loop);
@@ -253,9 +257,11 @@ sections.proto.magnet = function () {
   this.__magneticAnimation && this.__magneticAnimation.stop();
   this.__magneticTimer = setTimeout((function () {
     this.__magneticAnimation = this.scrollTo(this.getCurrentSection(), 1000);
-    this.__magneticAnimation.once('done', this.magnetDone.bind(this));
+    var done = this.magnetDone.bind(this);
+    this.__magneticAnimation.once('done', done);
+    this.__magneticAnimation.once('stopped', done);
     this.__magneticAnimation.start();
-  }).bind(this), 100);
+  }).bind(this), 500);
 };
 
 sections.proto.magnetDone = function () {
@@ -269,7 +275,7 @@ sections.proto.scrollTo = function (section, speed, easing) {
   var total = section.top - this.top;
   var top_ = this.top;
   var animate = new sections.Animate(function (progress) {
-    document.body.scrollTop = top_ + total * progress;
+    animate.scrollTop = document.body.scrollTop = (top_ + total * progress) | 0;
   }.bind(this), speed, easing);
   return animate;
 };

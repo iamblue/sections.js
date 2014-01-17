@@ -1,4 +1,4 @@
-/*! sectionsjs - v0.1.3 - 2014-01-15 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
+/*! sectionsjs - v0.1.3 - 2014-01-17 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
 
 (function(window, document) {
     "use strict";
@@ -7,7 +7,8 @@
         className: "section",
         containerClassName: "section__container",
         marginTop: 0,
-        autoSectionHeight: true
+        autoSectionHeight: true,
+        magnet: false
     };
     sections.utils = {};
     sections.utils.getInlineCSS = function(element) {
@@ -238,7 +239,7 @@
             var index = 0;
             return format.replace(/\\%s/g, "￿").replace(/%s/g, function() {
                 return values[index++];
-            }).replace(/\uffff/g, "%s");
+            }).replace(/￿/g, "%s");
         };
         return Transition;
     }();
@@ -280,12 +281,14 @@
             if (!this.visible) {
                 this.container.style.display = "block";
                 this.visible = true;
+                this.emit("show");
             }
         };
         Section.prototype.hide = function() {
             if (this.visible) {
                 this.container.style.display = "none";
                 this.visible = false;
+                this.emit("hide");
             }
         };
         Section.prototype.getCSS = function(key) {
@@ -352,12 +355,54 @@
         };
         return Section;
     }();
+    sections.Animate = function() {
+        function Animate(fn, speed, easing) {
+            this.id = 0;
+            this.startTime = 0;
+            this.started = false;
+            this.speed = speed || 300;
+            this.fn = fn;
+            this.easing = easing;
+        }
+        Animate.prototype = new sections.events.EventEmitter();
+        Animate.prototype.loop = function() {
+            this.id = sections.requestAnimationFrame(function() {
+                var progress = (Date.now() - this.startTime) / this.speed;
+                this.easing && (progress = this.easing(progress));
+                if (progress >= 1) {
+                    this.fn(1);
+                    this.emit("done");
+                } else {
+                    this.fn(progress);
+                    this.loop();
+                }
+            }.bind(this));
+        };
+        Animate.prototype.stop = function() {
+            this.started && sections.cancelAnimationFrame(this.id);
+            this.started = false;
+            this.emit("stopped");
+            return this;
+        };
+        Animate.prototype.start = function() {
+            if (!this.started) {
+                this.startTime = Date.now();
+                this.started = true;
+                this.emit("started");
+                this.loop();
+            }
+            return this;
+        };
+        return Animate;
+    }();
     sections.proto = new sections.events.EventEmitter();
     sections.proto.init = function() {
         this.__started = false;
         this.__init = true;
         this.__running = false;
         this.__prefix = null;
+        this.__magneticTimer = null;
+        this.__magneticAnimation = null;
         this.detectCSSPrefix();
         this.getSections();
         this.updateWindowSize();
@@ -411,14 +456,18 @@
             this.emit("stopped");
         }
     };
-    sections.proto.onScrollHandler = function() {
+    sections.proto.onScrollHandler = function(e) {
         if (this.__running) {
             return;
+        }
+        if (this.__magneticAnimation && this.__magneticAnimation.scrollTop !== document.documentElement.scrollTop) {
+            this.__magneticAnimation.stop();
         }
         this.__running = true;
         this.__intervalID = this.requestAnimationFrame(this.loop);
     };
     sections.proto.loop = function() {
+        this.config.magnet && this.__magneticAnimation === null && this.magnet();
         var scrollOffset = {
             x: 0,
             y: 0
@@ -426,9 +475,9 @@
         if (window.pageYOffset) {
             scrollOffset.y = window.pageYOffset;
             scrollOffset.x = window.pageXOffset;
-        } else if (document.body && document.body.scrollLeft) {
-            scrollOffset.y = document.body.scrollTop;
-            scrollOffset.x = document.body.scrollLeft;
+        } else if (document.body && document.documentElement.scrollLeft) {
+            scrollOffset.y = document.documentElement.scrollTop;
+            scrollOffset.x = document.documentElement.scrollLeft;
         } else if (document.documentElement && document.documentElement.scrollLeft) {
             scrollOffset.y = document.documentElement.scrollTop;
             scrollOffset.x = document.documentElement.scrollLeft;
@@ -534,6 +583,9 @@
     sections.proto.get = function(index) {
         return this.sections[index] || null;
     };
+    sections.proto.getCurrentSection = function() {
+        return this.get(this.currentIndex());
+    };
     sections.proto.section = function(index, fn) {
         if (!this.__init) {
             this.__lazyApply.push(function() {
@@ -569,6 +621,31 @@
         });
         return this;
     };
+    sections.proto.magnet = function() {
+        clearTimeout(this.__magneticTimer);
+        this.__magneticAnimation && this.__magneticAnimation.stop();
+        this.__magneticTimer = setTimeout(function() {
+            this.__magneticAnimation = this.scrollTo(this.getCurrentSection(), 1e3);
+            var done = this.magnetDone.bind(this);
+            this.__magneticAnimation.once("done", done);
+            this.__magneticAnimation.once("stopped", done);
+            this.__magneticAnimation.start();
+        }.bind(this), 500);
+    };
+    sections.proto.magnetDone = function() {
+        this.__magneticAnimation = null;
+    };
+    sections.proto.scrollTo = function(section, speed, easing) {
+        if (!(section instanceof sections.Section)) {
+            section = this.get(section);
+        }
+        var total = section.top - this.top;
+        var top_ = this.top;
+        var animate = new sections.Animate(function(progress) {
+            animate.scrollTop = document.documentElement.scrollTop = top_ + total * progress | 0;
+        }.bind(this), speed, easing);
+        return animate;
+    };
     sections.Sections = function(config) {
         sections.events.EventEmitter.call(this);
         config = config || {};
@@ -589,6 +666,8 @@
         this.__lazyApply = [];
     };
     sections.Sections.prototype = sections.proto;
+    sections.requestAnimationFrame = sections.proto.requestAnimationFrame;
+    sections.cancelAnimationFrame = sections.proto.cancelAnimationFrame;
     sections.create = function(config) {
         return new sections.Sections(config);
     };

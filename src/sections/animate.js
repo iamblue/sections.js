@@ -1,10 +1,11 @@
 sections.Animate = (function () {
-  function Animate(fn, speed) {
+  function Animate(fn, speed, easing) {
     this.id = 0;
     this.startTime = 0;
     this.started = false;
     this.speed = speed || 300;
     this.fn = fn;
+    this.easing = easing;
   }
 
   Animate.prototype = new sections.events.EventEmitter();
@@ -12,6 +13,7 @@ sections.Animate = (function () {
   Animate.prototype.loop = function () {
     this.id = sections.requestAnimationFrame((function () {
       var progress = (Date.now() - this.startTime) / this.speed;
+      this.easing && (progress = this.easing(progress));
       if (progress >= 1) {
         this.fn(1);
         this.emit('done');

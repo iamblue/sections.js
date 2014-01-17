@@ -262,7 +262,7 @@ sections.proto.magnetDone = function () {
   this.__magneticAnimation = null;
 };
 
-sections.proto.scrollTo = function (section, speed) {
+sections.proto.scrollTo = function (section, speed, easing) {
   if (!(section instanceof sections.Section)) {
     section = this.get(section);
   }
@@ -270,6 +270,6 @@ sections.proto.scrollTo = function (section, speed) {
   var top_ = this.top;
   var animate = new sections.Animate(function (progress) {
     document.body.scrollTop = top_ + total * progress;
-  }.bind(this), speed);
+  }.bind(this), speed, easing);
   return animate;
 };

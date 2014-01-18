@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>SectionsJS Pausing</title>
+  <script src="../dist/sectionsjs.min.js"></script>
+  <script>
+    var page = sections.create();
+
+    page.on('resize', function () {
+      var pause = page.get(1);
+      pause.element.style.height = page.height * 1.5 + 'px';
+    });
+
+    page.section(1, function (section) {
+      var className = 'section--pausing__container--fixed';
+      var last;
+
+      section.on('progress', function () {
+        var isFixed = section.container.classList.contains(className);
+        var curr = page.top > section.top && (page.top + page.height) < (section.top + section.getHeight());
+        if (isFixed) {
+          var total = section.getHeight() - page.height;
+          var progress = (page.top - section.top) / total * 100;
+          var removeClass = false;
+          if (progress > 100) {
+            progress = 100;
+            removeClass = true;
+          } else if (progress < 0) {
+            progress = 0;
+            removeClass = true;
+          }
+          section.container.style.width = progress + '%';
+          if (removeClass) {
+            section.container.classList.remove(className);
+          }
+        } else if (last !== curr) {
+          section.container.classList.add(className);
+        }
+        last = curr;
+      });
+    });
+
+    var onload = function () {
+      page.init();
+    };
+  </script>
+  <style>
+    body {
+      margin: 0;
+    }
+
+    .section {
+      min-height: 768px;
+      position: relative;
+    }
+
+    .section--black {
+      background: #000;
+    }
+
+    .section--pausing__container {
+      background: #F60;
+      width: 0;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .section--pausing__container--fixed {
+      position: fixed;
+    }
+  </style>
+</head>
+<body onload="onload();">
+
+  <section class="section section--black">
+  </section>
+
+  <section class="section section--pausing">
+    <div class="section__container section--pausing__container">
+    </div>
+  </section>
+
+  <section class="section section--white">
+  </section>
+
+</body>
+</html>

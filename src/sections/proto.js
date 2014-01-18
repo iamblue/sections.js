@@ -128,6 +128,7 @@ sections.proto.updateWindowSize = function () {
       section.updatePosition();
     });
   }
+  this.emit('resize');
   return this;
 };
 

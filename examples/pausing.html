@@ -9,6 +9,7 @@
     page.on('resize', function () {
       var pause = page.get(1);
       pause.element.style.height = page.height * 1.5 + 'px';
+      pause.container.style.height = page.height + 'px';
     });
 
     page.section(1, function (section) {
@@ -63,7 +64,7 @@
       width: 0;
       height: 100%;
       position: absolute;
-      top: 0;
+      bottom: 0;
       left: 0;
     }
 

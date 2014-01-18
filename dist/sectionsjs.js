@@ -1,4 +1,4 @@
-/*! sectionsjs - v0.1.3 - 2014-01-17 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
+/*! sectionsjs - v0.1.3 - 2014-01-18 | Copyright (c) 2013 Po-Ying Chen <poying.me@gmail.com> */
 
 (function(window, document) {
     "use strict";
@@ -509,6 +509,7 @@
                 section.updatePosition();
             });
         }
+        this.emit("resize");
         return this;
     };
     sections.proto.addWindowResizeHandler = function() {

@@ -11,8 +11,9 @@
     "grunt-contrib-uglify": "~0.2.4"
   },
   "scripts": {
-    "start": "node ./node_modules/http-server/bin/http-server ./demo",
-    "build": "grunt build"
+    "start": "node ./node_modules/http-server/bin/http-server ./",
+    "build": "grunt build",
+    "install": "grunt build"
   },
   "author": "Po-Ying Chen <poying.me@gmail.com>",
   "license": "MIT"
